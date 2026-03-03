@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.BLL.Services.Classes
 {
-    public class CategoryService : Interfaces.ICategoryService
+    public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
 
@@ -22,16 +22,16 @@ namespace E_Commerce.BLL.Services.Classes
             _categoryRepository = categoryRepository;
         }
 
-        public CategoryResponse CreateCategory(CategoryRequest categoryRequest)
+        public async Task<CategoryResponse> CreateCategoryAsync(CategoryRequest categoryRequest)
         {
             var category = categoryRequest.Adapt<Category>();
-            _categoryRepository.Create(category);
+            await _categoryRepository.CreateAsync(category);
             return category.Adapt<CategoryResponse>();
         }
 
-        public List<CategoryResponse> GetAllCategories()
+        public async Task<List<CategoryResponse>> GetAllCategoriesAsync()
         {
-            var categories = _categoryRepository.GetAll();   
+            var categories = await _categoryRepository.GetAllAsync();   
 
             return categories.Adapt<List<CategoryResponse>>();
         }

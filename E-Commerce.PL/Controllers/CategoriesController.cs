@@ -27,9 +27,9 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var response = _categoryService.GetAllCategories();
+            var response = await _categoryService.GetAllCategoriesAsync();
             return Ok(new {
                 data= response,
                 _localizer["Success"].Value
@@ -37,9 +37,9 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpPost("")]
-        public IActionResult Create(CategoryRequest categoryRequest)
+        public async Task<IActionResult> Create(CategoryRequest categoryRequest)
         {
-            var response = _categoryService.CreateCategory(categoryRequest);
+            var response =  await _categoryService.CreateCategoryAsync(categoryRequest);
             return Ok(new {
                 _localizer["Succes"].Value,
                 response

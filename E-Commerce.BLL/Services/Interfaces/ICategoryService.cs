@@ -10,8 +10,8 @@ namespace E_Commerce.BLL.Services.Interfaces
 {
     public interface ICategoryService
     {
-        List<CategoryResponse> GetAllCategories();
-        CategoryResponse CreateCategory(CategoryRequest categoryRequest);
+        Task <List<CategoryResponse>> GetAllCategoriesAsync();
+        Task <CategoryResponse> CreateCategoryAsync(CategoryRequest categoryRequest);
 
     }
 }
