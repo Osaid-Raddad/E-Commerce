@@ -1,8 +1,9 @@
-﻿using E_Commerce.DAL.Data;
+﻿using E_Commerce.BLL.Services.Interfaces;
+using E_Commerce.DAL.Data;
 using E_Commerce.DAL.DTO.Request;
 using E_Commerce.DAL.DTO.Response;
 using E_Commerce.DAL.Models;
-using E_Commerce.DAL.Repository;
+using E_Commerce.DAL.Repository.Interfaces;
 using E_Commerce.PL.Resources;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -16,20 +17,19 @@ namespace E_Commerce.PL.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryService _categoryService;
         private readonly IStringLocalizer<SharedResources> _localizer;
 
-        public CategoriesController(ICategoryRepository categoryRepository, IStringLocalizer<SharedResources> Localizer)
+        public CategoriesController(ICategoryService categoryService, IStringLocalizer<SharedResources> Localizer)
         {  
-            _categoryRepository = categoryRepository;
+            _categoryService = categoryService;
             _localizer = Localizer;
         }
 
         [HttpGet("")]
         public IActionResult Get()
         {
-            var categories = _categoryRepository.GetAll();
-            var response = categories.Adapt<List<CategoryResponse>>();
+            var response = _categoryService.GetAllCategories();
             return Ok(new {
                 data= response,
                 _localizer["Success"].Value
@@ -39,9 +39,11 @@ namespace E_Commerce.PL.Controllers
         [HttpPost("")]
         public IActionResult Create(CategoryRequest categoryRequest)
         {
-            var category = categoryRequest.Adapt<Category>();
-            _categoryRepository.Create(category);
-            return Ok(new { _localizer["Succes"].Value });
+            var response = _categoryService.CreateCategory(categoryRequest);
+            return Ok(new {
+                _localizer["Succes"].Value,
+                response
+            });
         }
     }
 }

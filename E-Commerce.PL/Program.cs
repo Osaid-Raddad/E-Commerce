@@ -1,6 +1,9 @@
 
+using E_Commerce.BLL.Services.Classes;
+using E_Commerce.BLL.Services.Interfaces;
 using E_Commerce.DAL.Data;
-using E_Commerce.DAL.Repository;
+using E_Commerce.DAL.Repository.Classes;
+using E_Commerce.DAL.Repository.Interfaces;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -47,8 +50,8 @@ namespace E_Commerce.PL
                     options.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
             });
 
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
+            builder.Services.AddScoped<DAL.Repository.Interfaces.ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<BLL.Services.Interfaces.ICategoryService, CategoryService>();
 
             var app = builder.Build();
 
