@@ -12,25 +12,11 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.DAL.Repository.Classes
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public CategoryRepository(ApplicationDbContext context)
+       public CategoryRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
-        }
 
-        public async Task<Category> CreateAsync(Category category)
-        {
-            await _context.Categories.AddAsync(category);
-            await _context.SaveChangesAsync();
-            return category;
-        }
-
-        public async Task<List<Category>> GetAllAsync()
-        {
-            return await _context.Categories.Include(c => c.Translations).ToListAsync();
         }
     }
 }

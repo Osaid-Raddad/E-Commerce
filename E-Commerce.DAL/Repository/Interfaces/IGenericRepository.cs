@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.DAL.Repository.Interfaces
 {
-    public interface ICategoryRepository : IGenericRepository<Category>
+    public interface IGenericRepository<T> where T : class
     {
-      
+        Task<List<T>> GetAllAsync();
+        Task<T> CreateAsync(T entity);
     }
 }
