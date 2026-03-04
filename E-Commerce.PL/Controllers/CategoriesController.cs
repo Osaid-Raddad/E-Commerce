@@ -36,6 +36,13 @@ namespace E_Commerce.PL.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _categoryService.GetCategory(c => c.Id == id));
+        }
+
+
         [HttpPost("")]
         public async Task<IActionResult> Create(CategoryRequest categoryRequest)
         {

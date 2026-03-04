@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,5 +36,12 @@ namespace E_Commerce.BLL.Services.Classes
 
             return categories.Adapt<List<CategoryResponse>>();
         }
+
+        public async Task<CategoryResponse> GetCategory(Expression<Func<Category, bool>> filter)
+        {
+            var category = await _categoryRepository.GetOneAsync(filter, new string[] { nameof(Category.Translations) });
+            return category.Adapt<CategoryResponse>();
+        }
+            
     }
 }
