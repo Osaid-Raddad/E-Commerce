@@ -42,6 +42,15 @@ namespace E_Commerce.PL.Controllers
             return Ok(await _categoryService.GetCategory(c => c.Id == id));
         }
 
+        [HttpGet("by-name/{name}")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            var result = await _categoryService.GetCategory(
+                c => c.Translations.Any(t => t.Name == name)
+            );
+
+            return Ok(result);
+        }
 
         [HttpPost("")]
         public async Task<IActionResult> Create(CategoryRequest categoryRequest)
