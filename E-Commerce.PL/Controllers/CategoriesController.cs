@@ -21,7 +21,7 @@ namespace E_Commerce.PL.Controllers
         private readonly IStringLocalizer<SharedResources> _localizer;
 
         public CategoriesController(ICategoryService categoryService, IStringLocalizer<SharedResources> Localizer)
-        {  
+        {
             _categoryService = categoryService;
             _localizer = Localizer;
         }
@@ -30,8 +30,9 @@ namespace E_Commerce.PL.Controllers
         public async Task<IActionResult> Get()
         {
             var response = await _categoryService.GetAllCategoriesAsync();
-            return Ok(new {
-                data= response,
+            return Ok(new
+            {
+                data = response,
                 _localizer["Success"].Value
             });
         }
@@ -55,11 +56,24 @@ namespace E_Commerce.PL.Controllers
         [HttpPost("")]
         public async Task<IActionResult> Create(CategoryRequest categoryRequest)
         {
-            var response =  await _categoryService.CreateCategoryAsync(categoryRequest);
-            return Ok(new {
+            var response = await _categoryService.CreateCategoryAsync(categoryRequest);
+            return Ok(new
+            {
                 _localizer["Succes"].Value,
                 response
             });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _categoryService.DeleteCategoryAsync(id);
+            if (result)
+            {
+                return Ok(new { _localizer["Deleted"].Value });
+            }
+            return NotFound(new { _localizer["NotFound"].Value });
+
         }
     }
 }

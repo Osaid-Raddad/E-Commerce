@@ -16,5 +16,6 @@ namespace E_Commerce.BLL.Services.Interfaces
         Task <CategoryResponse> CreateCategoryAsync(CategoryRequest categoryRequest);
         Task<CategoryResponse> GetCategory(Expression<Func<Category, bool>> filter);
 
+        Task <bool> DeleteCategoryAsync(int id);
     }
 }

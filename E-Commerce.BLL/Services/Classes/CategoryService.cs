@@ -30,6 +30,7 @@ namespace E_Commerce.BLL.Services.Classes
             return category.Adapt<CategoryResponse>();
         }
 
+
         public async Task<List<CategoryResponse>> GetAllCategoriesAsync()
         {
             var categories = await _categoryRepository.GetAllAsync(new string[]{ nameof(Category.Translations ) });   
@@ -42,6 +43,16 @@ namespace E_Commerce.BLL.Services.Classes
             var category = await _categoryRepository.GetOneAsync(filter, new string[] { nameof(Category.Translations) });
             return category.Adapt<CategoryResponse>();
         }
-            
+
+        public async Task<bool> DeleteCategoryAsync(int id)
+        {
+            var category = await _categoryRepository.GetOneAsync(c => c.Id == id);
+            if (category != null)
+            {
+                return await _categoryRepository.DeleteAsync(category);  
+            }
+            return false;
+        }
+
     }
 }
