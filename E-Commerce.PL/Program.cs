@@ -5,6 +5,8 @@ using E_Commerce.DAL.Data;
 using E_Commerce.DAL.Models;
 using E_Commerce.DAL.Repository.Classes;
 using E_Commerce.DAL.Repository.Interfaces;
+using E_Commerce.DAL.Utils;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -14,7 +16,7 @@ namespace E_Commerce.PL
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -54,8 +56,9 @@ namespace E_Commerce.PL
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<ISeedData, RoleSeedData>();
 
-            builder.Services.AddIdentityCore<ApplicationUser>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var app = builder.Build();
@@ -75,6 +78,16 @@ namespace E_Commerce.PL
 
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var seeders = services.GetServices<ISeedData>();
+                foreach (var seeder in seeders)
+                {
+                   await seeder.DataSeed();
+                }
+            }
 
             app.Run();
         }

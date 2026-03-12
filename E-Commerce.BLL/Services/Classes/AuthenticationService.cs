@@ -27,7 +27,10 @@ namespace E_Commerce.BLL.Services.Classes
 
             var result = await _userManager.CreateAsync(user, registerRequest.Password);
             if (result.Succeeded)
-               return new RegisterResponse { Message = "User registered successfully", Success = true };
+            {
+                await _userManager.AddToRoleAsync(user, "User");
+                return new RegisterResponse { Message = "User registered successfully", Success = true };
+            }
            
             return new RegisterResponse { Message = "Error", Success = false };
         }
