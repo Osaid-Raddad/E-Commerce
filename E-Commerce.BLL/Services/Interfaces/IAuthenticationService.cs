@@ -11,5 +11,6 @@ namespace E_Commerce.BLL.Services.Interfaces
     public interface IAuthenticationService
     {
         Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest);
+        Task<LoginResponse> LoginAsync(LoginRequest loginRequest);
     }
 }

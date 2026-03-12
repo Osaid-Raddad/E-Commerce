@@ -34,5 +34,19 @@ namespace E_Commerce.BLL.Services.Classes
            
             return new RegisterResponse { Message = "Error", Success = false };
         }
+
+        public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
+        {
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            if (user is null)
+                return new LoginResponse() { Message = "Invalid Email", Success = false };
+            
+            var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+            if (!result)
+                return new LoginResponse() { Message = "Invalid password", Success = false };
+
+            return new LoginResponse() { Message = "Login successful", Success = true };
+        }
+
     }
 }

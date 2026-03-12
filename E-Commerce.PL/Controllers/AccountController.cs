@@ -20,7 +20,23 @@ namespace E_Commerce.PL.Controllers
         public async Task<IActionResult> Register(RegisterRequest registerRequest) 
         {
             var result = await _authenticationService.RegisterAsync(registerRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
             return Ok(result);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        {
+            var result = await _authenticationService.LoginAsync(loginRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
     }
 }
