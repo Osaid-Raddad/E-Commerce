@@ -17,7 +17,7 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest registerRequest) 
+        public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             var result = await _authenticationService.RegisterAsync(registerRequest);
             if (!result.Success)
@@ -38,5 +38,10 @@ namespace E_Commerce.PL.Controllers
             return Ok(result);
         }
 
+        [HttpGet("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string token)
+        {
+            return Ok(new {message ="Success"});
+        }
     }
 }

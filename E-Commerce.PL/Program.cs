@@ -57,9 +57,11 @@ namespace E_Commerce.PL
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<ISeedData, RoleSeedData>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
