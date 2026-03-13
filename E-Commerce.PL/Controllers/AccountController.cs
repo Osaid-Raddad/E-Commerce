@@ -39,9 +39,13 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(string token)
+        public async Task<IActionResult> ConfirmEmail(string token, string userId)
         {
-            return Ok(new {message ="Success"});
+            var isConfirmed = await _authenticationService.ConfirmEmailAsync(token, userId);
+            if (isConfirmed)
+                return Ok("Email confirmed successfully");
+
+            return BadRequest("Email confirmation failed");
         }
     }
 }
