@@ -6,6 +6,7 @@ using E_Commerce.DAL.Models;
 using E_Commerce.DAL.Repository.Interfaces;
 using E_Commerce.PL.Resources;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,7 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpPost("")]
+        [Authorize]
         public async Task<IActionResult> Create(CategoryRequest categoryRequest)
         {
             var response = await _categoryService.CreateCategoryAsync(categoryRequest);
@@ -65,6 +67,7 @@ namespace E_Commerce.PL.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _categoryService.DeleteCategoryAsync(id);
