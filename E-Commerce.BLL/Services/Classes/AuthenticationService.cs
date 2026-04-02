@@ -3,6 +3,7 @@ using E_Commerce.DAL.DTO.Request;
 using E_Commerce.DAL.DTO.Response;
 using E_Commerce.DAL.Models;
 using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -21,12 +22,14 @@ namespace E_Commerce.BLL.Services.Classes
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IConfiguration configuration)
+        public AuthenticationService(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IConfiguration configuration,IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
@@ -51,7 +54,7 @@ namespace E_Commerce.BLL.Services.Classes
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             token = Uri.EscapeDataString(token);
 
-            var emailUrl = $"https://localhost:7003/api/Account/ConfirmEmail?token={token}&userId={user.Id}";
+            var emailUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}/api/Account/ConfirmEmail?token={token}&userId={user.Id}";
 
             await _emailSender.SendEmailAsync(
                                 user.Email,

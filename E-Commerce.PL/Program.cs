@@ -29,6 +29,18 @@ namespace E_Commerce.PL
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.AllowAnyOrigin()
+                                            .AllowAnyMethod()
+                                            .AllowAnyHeader();
+                                  });
+            });
+
             builder.Services.AddDbContext<ApplicationDbContext>(option =>
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -91,6 +103,7 @@ namespace E_Commerce.PL
 
 
             builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
@@ -101,6 +114,7 @@ namespace E_Commerce.PL
             {
                 app.MapOpenApi();
             }
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
 
