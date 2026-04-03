@@ -12,5 +12,8 @@ namespace E_Commerce.DAL.Models
         public string FullName { get; set; }
         public string? City { get; set; }
         public string? Street { get; set; }
+
+        public string? RestetCode { get; set; }
+        public DateTime? RestetCodeExpiration { get; set; }
     }
 }

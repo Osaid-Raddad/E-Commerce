@@ -47,5 +47,27 @@ namespace E_Commerce.PL.Controllers
 
             return BadRequest("Email confirmation failed");
         }
+
+        [HttpPost("SendCode")]
+        public async Task<IActionResult> SendCode(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            var result = await _authenticationService.RequestForgotPassAsync(forgotPasswordRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            var result = await _authenticationService.ResetPasswordAsync(resetPasswordRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

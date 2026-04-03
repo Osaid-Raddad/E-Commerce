@@ -13,5 +13,7 @@ namespace E_Commerce.BLL.Services.Interfaces
         Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest);
         Task<LoginResponse> LoginAsync(LoginRequest loginRequest);
         Task<bool> ConfirmEmailAsync(string token, string userId);
+        Task<ForgotPasswordResponse> RequestForgotPassAsync(ForgotPasswordRequest forgotPasswordRequest);
+        Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     }
 }

@@ -187,5 +187,215 @@ namespace E_Commerce.BLL.Services.Classes
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<ForgotPasswordResponse> RequestForgotPassAsync(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            var user = await _userManager.FindByEmailAsync(forgotPasswordRequest.Email);
+            if (user is null)
+                return new ForgotPasswordResponse() { 
+                    Message = "Email not found",
+                    Success = false 
+                };
+
+            var random = new Random();
+            var code = random.Next(1000, 9999).ToString();
+
+            user.RestetCode = code;
+            user.RestetCodeExpiration = DateTime.Now.AddMinutes(15);
+            await _userManager.UpdateAsync(user);
+
+            await _emailSender.SendEmailAsync(user.Email,
+                            "Reset Your Password - E-Commerce",
+                            $@"<!DOCTYPE html>
+                    <html lang=""en"">
+                    <head>
+                    <meta charset=""UTF-8"">
+                    <title>Reset Password</title>
+                    </head>
+
+                    <body style=""margin:0;padding:0;background:#f2f5f9;font-family:Arial,Helvetica,sans-serif;"">
+
+                    <table width=""100%"" cellpadding=""0"" cellspacing=""0"">
+                    <tr>
+                    <td align=""center"">
+
+                    <table width=""600"" cellpadding=""0"" cellspacing=""0""
+                    style=""background:white;border-radius:10px;overflow:hidden;margin-top:40px;box-shadow:0 5px 20px rgba(0,0,0,0.08);"">
+
+                    <tr>
+                    <td style=""background:linear-gradient(135deg,#ef4444,#f97316);padding:30px;text-align:center;color:white;"">
+                    <h1 style=""margin:0;font-size:26px;"">E-Commerce</h1>
+                    <p style=""margin-top:8px;font-size:14px;opacity:0.9;"">Password Reset Request</p>
+                    </td>
+                    </tr>
+
+                    <tr>
+                    <td style=""padding:40px;text-align:center;"">
+
+                    <h2 style=""margin-top:0;color:#333;"">Reset Your Password</h2>
+
+                    <p style=""font-size:16px;color:#555;line-height:1.6;"">
+                    Hello <strong>{user.UserName}</strong>,<br><br>
+                    We received a request to reset your password.<br>
+                    Use the verification code below to proceed:
+                    </p>
+
+                    <div style=""margin:30px 0;"">
+                    <span style=""
+                    display:inline-block;
+                    background:#f3f4f6;
+                    padding:15px 30px;
+                    font-size:28px;
+                    letter-spacing:5px;
+                    font-weight:bold;
+                    color:#111827;
+                    border-radius:8px;"">
+                    {code}
+                    </span>
+                    </div>
+
+                    <p style=""font-size:15px;color:#555;"">
+                    This code will expire at:<br>
+                    <strong>{user.RestetCodeExpiration:yyyy-MM-dd hh:mm tt}</strong>
+                    </p>
+
+                    <p style=""font-size:14px;color:#777;margin-top:20px;"">
+                    If you didn't request a password reset, you can safely ignore this email.
+                    </p>
+
+                    </td>
+                    </tr>
+
+                    <tr>
+                    <td style=""background:#f9fafc;padding:20px;text-align:center;font-size:12px;color:#888;"">
+                    © 2026 E-Commerce Platform<br>
+                    All rights reserved
+                    </td>
+                    </tr>
+
+                    </table>
+
+                    </td>
+                    </tr>
+                    </table>
+
+                    </body>
+                    </html>"
+        );
+        return new ForgotPasswordResponse()
+            {
+                Message = "Reset code sent to your email",
+                Success = true
+            };
+        }
+
+        public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPasswordRequest.Email);
+            if (user == null)
+                return new ResetPasswordResponse() 
+                {
+                    Message = "Email not found",
+                    Success = false
+                };
+            else if (user.RestetCode != resetPasswordRequest.Code || user.RestetCodeExpiration < DateTime.Now)
+                return new ResetPasswordResponse() 
+                { 
+                    Message = "Invalid or expired code", 
+                    Success = false 
+                };
+            var isSamePassword = await _userManager.CheckPasswordAsync(user, resetPasswordRequest.NewPassword);
+            if (isSamePassword)
+            {
+                return new ResetPasswordResponse()
+                {
+                    Message = "New password cannot be the same as the old password",
+                    Success = false
+                };
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result =await _userManager.ResetPasswordAsync(user,token , resetPasswordRequest.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return new ResetPasswordResponse()
+                {
+                    Message = string.Join(", ", errors),
+                    Success = false
+                };
+            }
+
+            await _emailSender.SendEmailAsync(
+                      user.Email,
+                      "Password Changed Successfully - E-Commerce",
+                      $@"<!DOCTYPE html>
+                <html lang=""en"">
+                <head>
+                <meta charset=""UTF-8"">
+                <title>Password Changed</title>
+                </head>
+
+                <body style=""margin:0;padding:0;background:#f2f5f9;font-family:Arial,Helvetica,sans-serif;"">
+
+                <table width=""100%"" cellpadding=""0"" cellspacing=""0"">
+                <tr>
+                <td align=""center"">
+
+                <table width=""600"" cellpadding=""0"" cellspacing=""0""
+                style=""background:white;border-radius:10px;overflow:hidden;margin-top:40px;box-shadow:0 5px 20px rgba(0,0,0,0.08);"">
+
+                <tr>
+                <td style=""background:linear-gradient(135deg,#10b981,#059669);padding:30px;text-align:center;color:white;"">
+                <h1 style=""margin:0;font-size:26px;"">E-Commerce</h1>
+                <p style=""margin-top:8px;font-size:14px;opacity:0.9;"">Security Notification</p>
+                </td>
+                </tr>
+
+                <tr>
+                <td style=""padding:40px;text-align:center;"">
+
+                <h2 style=""margin-top:0;color:#333;"">Password Updated</h2>
+
+                <p style=""font-size:16px;color:#555;line-height:1.6;"">
+                Hello <strong>{user.UserName}</strong>,<br><br>
+                Your password has been successfully changed.
+                </p>
+
+                <div style=""margin:25px 0;font-size:14px;color:#555;"">
+                <strong>Date:</strong> {DateTime.Now:yyyy-MM-dd}<br>
+                <strong>Time:</strong> {DateTime.Now:hh:mm tt}
+                </div>
+
+                <p style=""font-size:14px;color:#777;margin-top:20px;"">
+                If you did not perform this action, please contact support immediately.
+                </p>
+
+                </td>
+                </tr>
+
+                <tr>
+                <td style=""background:#f9fafc;padding:20px;text-align:center;font-size:12px;color:#888;"">
+                © 2026 E-Commerce Platform<br>
+                All rights reserved
+                </td>
+                </tr>
+
+                </table>
+
+                </td>
+                </tr>
+                </table>
+
+                </body>
+                </html>"
+            );
+
+            return new ResetPasswordResponse()
+            {
+                Message = "Password reset successfully",
+                Success = true
+            };
+
+        }
     }
 }

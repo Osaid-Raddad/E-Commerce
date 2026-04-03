@@ -77,6 +77,13 @@ namespace E_Commerce.PL
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
+                options.Password.RequireDigit = true; // 0-9
+                options.Password.RequireLowercase = true; // a-z
+                options.Password.RequireUppercase = true; // A-Z
+                options.Password.RequireNonAlphanumeric = true; // Special characters like !, @, #, etc.
+                options.Password.RequiredLength = 10; // Minimum length of 8 characters
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
