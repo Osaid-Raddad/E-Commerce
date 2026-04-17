@@ -40,12 +40,13 @@ namespace E_Commerce.BLL.Services.Classes
 
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description).ToList();
+                
 
                 return new RegisterResponse
                 {
                     Success = false,
-                    Message = string.Join(", ", errors)
+                    Message = "Error occurred during registration",
+                    Errors = result.Errors.Select(e => e.Description).ToList()
                 };
             }
 
