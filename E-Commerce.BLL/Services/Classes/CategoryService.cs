@@ -27,13 +27,24 @@ namespace E_Commerce.BLL.Services.Classes
         {
             var category = categoryRequest.Adapt<Category>();
             await _categoryRepository.CreateAsync(category);
+            var createdCategory = await _categoryRepository.GetOneAsync(
+                c => c.Id == category.Id,
+                new string[]
+                {
+                    nameof(Category.CreatedBy),
+                    nameof(Category.Translations)
+                }
+            );
             return category.Adapt<CategoryResponse>();
         }
 
 
         public async Task<List<CategoryResponse>> GetAllCategoriesAsync()
         {
-            var categories = await _categoryRepository.GetAllAsync(new string[]{ nameof(Category.Translations ) });   
+            var categories = await _categoryRepository.GetAllAsync(
+                new string[]{ nameof(Category.Translations ),
+                nameof(Category.CreatedBy)
+            });   
 
             return categories.Adapt<List<CategoryResponse>>();
         }

@@ -12,5 +12,7 @@ namespace E_Commerce.DAL.Models
 
         public List<CategoryTranslation> Translations {  get; set; }
 
+        public List<Product> Products { get; set; }
+
     }
 }

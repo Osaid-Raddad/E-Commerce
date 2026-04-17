@@ -1,4 +1,5 @@
 
+using E_Commerce.BLL.Mapping;
 using E_Commerce.BLL.Services.Classes;
 using E_Commerce.BLL.Services.Interfaces;
 using E_Commerce.DAL.Data;
@@ -110,7 +111,7 @@ namespace E_Commerce.PL
 
 
             builder.Services.AddAuthorization();
-
+            MapsterConfig.MapsterConfigRegister();
             var app = builder.Build();
 
             app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
