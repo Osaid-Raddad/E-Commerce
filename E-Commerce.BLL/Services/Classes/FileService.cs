@@ -20,6 +20,7 @@ namespace E_Commerce.BLL.Services.Classes
 
                 var filePath = Path.Combine(
                     Directory.GetCurrentDirectory(),
+                    "wwwroot",
                     "images",
                     fileName
                     );
@@ -35,6 +36,15 @@ namespace E_Commerce.BLL.Services.Classes
 
             return null;
 
+        }
+    
+
+        public void Delete(string fileName)
+        {
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
+
+            if (File.Exists(path)) File.Delete(path);
         }
     }
 }

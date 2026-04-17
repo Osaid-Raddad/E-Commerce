@@ -20,6 +20,13 @@ namespace E_Commerce.BLL.Mapping
             .Map(dest => dest.Name, src => src.Translations.Where
             (t=>t.Language== CultureInfo.CurrentCulture.Name)
             .Select(t=>t.Name).FirstOrDefault() );
+
+            TypeAdapterConfig<Product, ProductResponse>.NewConfig()
+            .Map(dest => dest.UserCreated, src => src.CreatedBy.UserName)
+            .Map(dest => dest.Name, src => src.Translations.Where
+            (t => t.language == CultureInfo.CurrentCulture.Name)
+            .Select(t => t.Name).FirstOrDefault() )
+            .Map(dest => dest.MainImage,source => $"https://localhost:7003/images/{source.MainImage}");
         }
     }
 }

@@ -10,6 +10,10 @@ namespace E_Commerce.DAL.DTO.Response
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public decimal Price { get; set; }
+
+        public decimal Discount { get; set; }
+        public int Quantity { get; set; }
         public string MainImage { get; set; }
         public string UserCreated { get; set; }
     }

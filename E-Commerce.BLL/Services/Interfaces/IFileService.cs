@@ -10,5 +10,6 @@ namespace E_Commerce.BLL.Services.Interfaces
     public interface IFileService
     {
         Task<string?> UploadFileAsync(IFormFile file);
+        void Delete(string fileName);
     }
 }

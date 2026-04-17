@@ -8,6 +8,7 @@ namespace E_Commerce.DAL.Models
 {
     public class Product : AuditableEntity
     {
+        public int Id { get; set; }
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
 

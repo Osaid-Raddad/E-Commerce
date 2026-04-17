@@ -73,8 +73,10 @@ namespace E_Commerce.PL
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<ISeedData, RoleSeedData>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IFileService, FileService>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
-
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
