@@ -16,6 +16,8 @@ namespace E_Commerce.BLL.Services.Interfaces
         Task<List<ProductResponse>> GetAllProductsAsync();
 
         Task<ProductResponse?> GetProduct(Expression<Func<Product, bool>> filter);
+
+        Task <bool> UpdateProduct(int id, ProductUpdateRequest request);  
         Task<bool> DeleteProduct(int id);
     }
 }

@@ -42,6 +42,18 @@ namespace E_Commerce.PL.Controllers
             });
         }
 
+        [HttpPatch("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Update(int id, [FromForm] ProductUpdateRequest request)
+        {
+            var updated = await _productService.UpdateProduct(id, request);
+
+            if (!updated) return BadRequest();
+
+            return Ok();
+        }
+
+
         [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> Create([FromForm] ProductRequest request)

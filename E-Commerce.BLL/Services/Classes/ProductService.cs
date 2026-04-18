@@ -60,6 +60,53 @@ namespace E_Commerce.BLL.Services.Classes
             return product.Adapt<ProductResponse>();
         }
 
+        public async Task<bool> UpdateProduct(int id, ProductUpdateRequest request)
+        {
+            var product = await _productRepository.GetOneAsync(p => p.Id == id);
+            if (product == null) return false;
+
+            request.Adapt(product);
+
+            if (request.Translations != null)
+            {
+                foreach (var translationRequest in request.Translations)
+                {
+                    var existing = product.Translations.FirstOrDefault(t => t.Language == translationRequest.Language);
+
+                    if (existing != null)
+                    {
+                        if (translationRequest.Name != null)
+                        {
+                            existing.Name = translationRequest.Name;
+                        }
+                        if (translationRequest.Description != null)
+                        {
+                            existing.Description = translationRequest.Description;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            var oldImage = product.MainImage;
+
+            if (request.MainImage != null)
+            {
+                _fileService.Delete(oldImage);
+                product.MainImage = await _fileService.UploadFileAsync(request.MainImage);
+            }
+            else
+            {
+                product.MainImage = oldImage;
+            }
+
+            return await _productRepository.UpdateAsync(product);
+        }
+
+
         public async Task<bool> DeleteProduct(int id)
         {
 
@@ -69,5 +116,7 @@ namespace E_Commerce.BLL.Services.Classes
             _fileService.Delete(product.MainImage);
             return await _productRepository.DeleteAsync(product);
         }
+
+        
     }
 }

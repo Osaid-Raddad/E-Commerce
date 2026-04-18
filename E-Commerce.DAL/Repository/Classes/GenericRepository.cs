@@ -55,11 +55,20 @@ namespace E_Commerce.DAL.Repository.Classes
             return await query.FirstOrDefaultAsync(filter);
         }
 
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            _context.Update(entity);
+            var effected = await _context.SaveChangesAsync();
+            return effected > 0;
+        }
+
         public async Task<bool> DeleteAsync(T entity)
         {
             _context.Remove(entity);
             var effected = await _context.SaveChangesAsync();
             return effected > 0;
         }
+
+       
     }
 }

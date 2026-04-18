@@ -13,7 +13,7 @@ namespace E_Commerce.DAL.Repository.Interfaces
         Task<List<T>> GetAllAsync(string[]? includes = null);
         Task<T> CreateAsync(T entity);
         Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, string[]? includes = null);
-
+        Task <bool> UpdateAsync(T entity);
         Task <bool> DeleteAsync(T entity);
     }
 }
