@@ -1,8 +1,10 @@
 ﻿using E_Commerce.BLL.Services.Interfaces;
 using E_Commerce.DAL.DTO.Request;
+using E_Commerce.PL.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace E_Commerce.PL.Controllers
 {
@@ -11,10 +13,12 @@ namespace E_Commerce.PL.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IStringLocalizer<SharedResources> _localizer;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IStringLocalizer<SharedResources> Localizer)
         {
             _productService = productService;
+            _localizer = Localizer;
         }
 
 
@@ -25,7 +29,8 @@ namespace E_Commerce.PL.Controllers
 
             return Ok(new
             {
-                data = products
+                data = products,
+                _localizer["Success"].Value
             });
         }
 

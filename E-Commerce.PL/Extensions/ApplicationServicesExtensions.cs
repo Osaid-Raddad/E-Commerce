@@ -27,6 +27,10 @@ namespace E_Commerce.PL.Extensions
 
             Services.AddScoped<IProductRepository, ProductRepository>();
 
+            Services.AddScoped<ICartRepository, CartRepository>();
+            
+            Services.AddScoped<ICartService, CartService>();
+
             return Services;
         }
     }

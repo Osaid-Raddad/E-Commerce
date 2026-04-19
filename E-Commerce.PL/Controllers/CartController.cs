@@ -27,8 +27,14 @@ namespace E_Commerce.PL.Controllers
         public async Task<IActionResult> AddToCart(AddToCartRequest request)
         {
             var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _cartService.AddToCart(request, UserId);
-
+            var result = await _cartService.AddToCart(request, UserId);
+            if(!result)
+            {
+                return BadRequest(new
+                {
+                    message = _localizer["Failed"].Value,
+                });
+            }
             return Ok(new
             {
                 message = _localizer["Success"].Value,

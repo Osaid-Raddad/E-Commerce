@@ -64,7 +64,10 @@ namespace E_Commerce.BLL.Services.Classes
 
         public async Task<bool> UpdateProduct(int id, ProductUpdateRequest request)
         {
-            var product = await _productRepository.GetOneAsync(p => p.Id == id);
+            var product = await _productRepository.GetOneAsync(
+                  p => p.Id == id,
+                  new string[] { nameof(Product.Translations) }
+               );
             if (product == null) return false;
 
             request.Adapt(product);
