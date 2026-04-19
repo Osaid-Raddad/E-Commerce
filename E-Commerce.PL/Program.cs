@@ -7,6 +7,7 @@ using E_Commerce.DAL.Models;
 using E_Commerce.DAL.Repository.Classes;
 using E_Commerce.DAL.Repository.Interfaces;
 using E_Commerce.DAL.Utils;
+using E_Commerce.PL.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -30,87 +31,14 @@ namespace E_Commerce.PL
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  policy =>
-                                  {
-                                      policy.AllowAnyOrigin()
-                                            .AllowAnyMethod()
-                                            .AllowAnyHeader();
-                                  });
-            });
+           
 
-            builder.Services.AddDbContext<ApplicationDbContext>(option =>
-            {
-                option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddLocalization(options => options.ResourcesPath = "");
-
-            const string defaultCulture = "en";
-            var supportedCultures = new[]
-            {
-                new CultureInfo(defaultCulture),
-                new CultureInfo("ar")
-            };
-
-            builder.Services.Configure<RequestLocalizationOptions>(options => {
-                    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
-                    options.SupportedCultures = supportedCultures;
-                    options.SupportedUICultures = supportedCultures;
-
-                    options.RequestCultureProviders.Clear();
-                    //options.RequestCultureProviders.Add(new QueryStringRequestCultureProvider 
-                    //{
-                    //    QueryStringKey="lang"
-                    //});
-                    options.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
-            });
-
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddScoped<ISeedData, RoleSeedData>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IFileService, FileService>();
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireDigit = true; // 0-9
-                options.Password.RequireLowercase = true; // a-z
-                options.Password.RequireUppercase = true; // A-Z
-                options.Password.RequireNonAlphanumeric = true; // Special characters like !, @, #, etc.
-                options.Password.RequiredLength = 10; // Minimum length of 8 characters
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
-                };
-            });
-
+            builder.Services.AddDatatbaseServices(builder.Configuration);
+            builder.Services.AddIdentityServices();
+            builder.Services.AddJwtAuthentication(builder.Configuration);
+            builder.Services.AddApplicationServices();
+            builder.Services.AddLocaliztionServices();
+            builder.Services.AddCorsPolicyServices();
 
             builder.Services.AddAuthorization();
             MapsterConfig.MapsterConfigRegister();
@@ -124,7 +52,7 @@ namespace E_Commerce.PL
             {
                 app.MapOpenApi();
             }
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(AddCorsPolicy.PolicyName);
 
             app.UseHttpsRedirection();
 

@@ -19,5 +19,6 @@ namespace E_Commerce.BLL.Services.Interfaces
 
         Task <bool> UpdateProduct(int id, ProductUpdateRequest request);  
         Task<bool> DeleteProduct(int id);
+        Task<bool> ToggleStatus(int id);
     }
 }

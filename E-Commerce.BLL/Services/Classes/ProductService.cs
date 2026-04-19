@@ -39,9 +39,11 @@ namespace E_Commerce.BLL.Services.Classes
         public async Task<List<ProductResponse>> GetAllProductsAsync()
         {
             var products = await _productRepository.GetAllAsync(
+                p => p.Status == EntityStatus.Active
+                ,
                 new string[] {
-                    nameof(Product.Translations),
-                    nameof(Product.CreatedBy)
+            nameof(Product.Translations),
+            nameof(Product.CreatedBy)
                 }
             );
 
@@ -117,6 +119,16 @@ namespace E_Commerce.BLL.Services.Classes
             return await _productRepository.DeleteAsync(product);
         }
 
-        
+        public async Task<bool> ToggleStatus(int id)
+        {
+            var product = await _productRepository.GetOneAsync(p => p.Id == id);
+
+            if (product is null) return false;
+
+            product.Status = product.Status == EntityStatus.Active ?
+                EntityStatus.Inactive : EntityStatus.Active;
+
+            return await _productRepository.UpdateAsync(product);
+        }
     }
 }

@@ -65,6 +65,16 @@ namespace E_Commerce.PL.Controllers
             });
         }
 
-        
+        [HttpPatch("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> ChangeStatus(int id)
+        {
+            var updated = await _productService.ToggleStatus(id);
+
+            if (!updated) return BadRequest();
+
+            return Ok();
+        }
+
     }
 }
