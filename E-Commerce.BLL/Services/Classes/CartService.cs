@@ -55,24 +55,60 @@ namespace E_Commerce.BLL.Services.Classes
             return true;
         }
 
-        public Task<bool> ClearCart(string userId)
+        public async Task<bool> ClearCart(string userId)
         {
-            throw new NotImplementedException();
+            var items = await _cartRepository.GetAllAsync(
+                filter: c => c.UserId == userId
+            );
+
+            if (!items.Any()) return false;
+
+            await _cartRepository.DeleteRangeAsync(items);
+            return true;
         }
 
-        public Task<List<CartResponse>> GetCart(string userId)
+        public async Task<List<CartResponse>> GetCart(string userId)
         {
-            throw new NotImplementedException();
+            var items = await _cartRepository.GetAllAsync(
+
+                 filter: c => c.UserId == userId,
+                 includes: new string[]
+                 {
+                    nameof(Cart.Product),
+                    $"{nameof(Cart.Product)}.{nameof(Product.Translations)}"
+                 }
+
+            );
+
+            return items.Adapt<List<CartResponse>>();
         }
 
-        public Task<bool> RemoveItem(int productId, string userId)
+        public async Task<bool> RemoveItem(int productId, string userId)
         {
-            throw new NotImplementedException();
+            var item = await _cartRepository.GetOneAsync(
+               c => c.ProductId == productId && c.UserId == userId
+            );
+
+            if (item is null) return false;
+
+            return await _cartRepository.DeleteAsync(item);
         }
 
-        public Task<bool> UpdateQuantity(int productId, int count, string userId)
+        public async Task<bool> UpdateQuantity(int productId, int count, string userId)
         {
-            throw new NotImplementedException();
+            var item = await _cartRepository.GetOneAsync(
+                c => c.ProductId == productId && c.UserId == userId
+            );
+
+            if (item is null) return false;
+
+            var product = await _productRepository.GetOneAsync(p => p.Id == productId);
+
+            if (count > product.Quantity) return false;
+
+            item.Count = count;
+
+            return await _cartRepository.UpdateAsync(item);
         }
     }
 }

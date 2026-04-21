@@ -36,7 +36,7 @@ namespace E_Commerce.PL
             builder.Services.AddDatatbaseServices(builder.Configuration);
             builder.Services.AddIdentityServices();
             builder.Services.AddJwtAuthentication(builder.Configuration);
-            builder.Services.AddApplicationServices();
+            builder.Services.AddApplicationServices(builder.Configuration);
             builder.Services.AddLocaliztionServices();
             builder.Services.AddCorsPolicyServices();
 

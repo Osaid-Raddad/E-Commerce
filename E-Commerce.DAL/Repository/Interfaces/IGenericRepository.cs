@@ -15,5 +15,7 @@ namespace E_Commerce.DAL.Repository.Interfaces
         Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, string[]? includes = null);
         Task <bool> UpdateAsync(T entity);
         Task <bool> DeleteAsync(T entity);
+
+        Task<bool> DeleteRangeAsync(List<T> entitits);
     }
 }

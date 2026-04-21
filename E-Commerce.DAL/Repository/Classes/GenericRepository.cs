@@ -71,6 +71,11 @@ namespace E_Commerce.DAL.Repository.Classes
             return effected > 0;
         }
 
-       
+        public async Task<bool> DeleteRangeAsync(List<T> entitits)
+        {
+            _context.RemoveRange(entitits);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
     }
 }

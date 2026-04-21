@@ -1,4 +1,5 @@
-﻿using E_Commerce.BLL.Services.Interfaces;
+﻿using E_Commerce.BLL.Services.Classes;
+using E_Commerce.BLL.Services.Interfaces;
 using E_Commerce.DAL.DTO.Request;
 using E_Commerce.PL.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,16 @@ namespace E_Commerce.PL.Controllers
             _localizer = Localizer;
         }
 
+        [HttpGet("")]
+        public async Task<IActionResult> GetCart()
+        {
+            var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var items = await _cartService.GetCart(UserId);
+
+            return Ok(new { data = items });
+        }
+
+
         [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> AddToCart(AddToCartRequest request)
@@ -39,6 +50,28 @@ namespace E_Commerce.PL.Controllers
             {
                 message = _localizer["Success"].Value,
             });
+        }
+
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> RemoveItem([FromRoute] int productId)
+        {
+            var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var removed = await _cartService.RemoveItem(productId, UserId);
+
+            if (!removed) return BadRequest();
+
+            return Ok();
+        }
+
+        [HttpPatch("{productId}")]
+        public async Task<IActionResult> UpdateQuantity([FromRoute] int productId, [FromBody] UpdateCartRequest request)
+        {
+            var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var updated = await _cartService.UpdateQuantity(productId, request.Count, UserId);
+
+            if (!updated) return BadRequest();
+
+            return Ok();
         }
     }
 }
