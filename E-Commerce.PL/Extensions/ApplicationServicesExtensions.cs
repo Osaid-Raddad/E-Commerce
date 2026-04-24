@@ -32,6 +32,9 @@ namespace E_Commerce.PL.Extensions
             
             Services.AddScoped<ICartService, CartService>();
 
+            Services.AddScoped<ICheckoutService, BLL.Services.Classes.CheckoutService>();
+
+
             Services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             StripeConfiguration.ApiKey = Configuration["Stripe:SecretKey"];
 

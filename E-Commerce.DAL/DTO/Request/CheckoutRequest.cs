@@ -11,7 +11,7 @@ namespace E_Commerce.DAL.DTO.Request
         Cash = 1, Visa = 2
     }
 
-    public class ChekcoutRequest
+    public class CheckoutRequest
     {
         public string? City { get; set; }
         public string? Street { get; set; }
