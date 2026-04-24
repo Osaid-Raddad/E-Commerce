@@ -16,12 +16,16 @@ namespace E_Commerce.BLL.Services.Classes
         private readonly ICartRepository _cartRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IOrderRepository _orderRepository;
 
-        public CheckoutService(ICartRepository cartRepository, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor) 
+        public CheckoutService(ICartRepository cartRepository,
+            UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
+            IOrderRepository orderRepository) 
         {
             _cartRepository = cartRepository;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _orderRepository = orderRepository;
         }
 
         public async Task<CheckoutResponse> ProcessCheckout(string userId, CheckoutRequest request)
@@ -77,6 +81,23 @@ namespace E_Commerce.BLL.Services.Classes
                     };
                 }
             }
+            var order = new Order()
+            {
+                UserId = userId,
+                City = city,
+                Street = street,
+                PhoneNumber = phoneNumber,
+                PaymentMethod = request.PaymentMethod,
+                AmoundPaid = cartItems.Sum(c => c.Product.Price * c.Count),
+                OrderItems = cartItems.Select(c => new OrderItem
+                {
+                    ProductId = c.ProductId,
+                    Quantity = c.Count,
+                    UnitPrice = c.Product.Price,
+                    TotalPrice = c.Product.Price * c.Count,
+                }).ToList()
+            };
+            await _orderRepository.CreateAsync(order);
 
             if (request.PaymentMethod == PaymentMethodEnum.Cash)
             {

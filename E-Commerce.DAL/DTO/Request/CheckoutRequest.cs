@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace E_Commerce.DAL.DTO.Request
@@ -16,6 +17,7 @@ namespace E_Commerce.DAL.DTO.Request
         public string? City { get; set; }
         public string? Street { get; set; }
         public string? PhoneNumber { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PaymentMethodEnum PaymentMethod { get; set; }
     }
 }
