@@ -14,6 +14,7 @@ namespace E_Commerce.DAL.Models
         Shipped = 3,
         Delivered = 4,
         Cancelled = 5,
+        Paid = 6,
     }
 
     public class Order

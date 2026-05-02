@@ -77,5 +77,10 @@ namespace E_Commerce.DAL.Repository.Classes
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> UpdateRangeAsync(List<T> entitits)
+        {
+            _context.UpdateRange(entitits);
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

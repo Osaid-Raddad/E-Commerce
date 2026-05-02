@@ -17,5 +17,6 @@ namespace E_Commerce.DAL.Repository.Interfaces
         Task <bool> DeleteAsync(T entity);
 
         Task<bool> DeleteRangeAsync(List<T> entitits);
+        Task<bool> UpdateRangeAsync(List<T> entitits);
     }
 }

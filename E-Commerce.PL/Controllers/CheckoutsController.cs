@@ -30,5 +30,14 @@ namespace E_Commerce.PL.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("success")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Success([FromQuery] string sessionId)
+        {
+            var result = await _checkoutService.HanldeSuccess(sessionId);
+
+            return Ok(new { message = "success", sessionId = sessionId });
+        }
     }
 }
