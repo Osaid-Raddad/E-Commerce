@@ -23,11 +23,15 @@ namespace E_Commerce.BLL.Mapping
             .Select(t=>t.Name).FirstOrDefault() );
 
             TypeAdapterConfig<Product, ProductResponse>.NewConfig()
-            .Map(dest => dest.UserCreated, src => src.CreatedBy.UserName)
-            .Map(dest => dest.Name, src => src.Translations.Where
-            (t => t.Language == CultureInfo.CurrentCulture.Name)
-            .Select(t => t.Name).FirstOrDefault() )
-            .Map(dest => dest.MainImage,source => $"https://localhost:7003/images/{source.MainImage}");
+            .Map(dest => dest.UserCreated, source => source.CreatedBy.UserName)
+            .Map(dest => dest.Name, source => source.Translations.Where(
+                t => t.Language == CultureInfo.CurrentCulture.Name)
+                .Select(t => t.Name).FirstOrDefault()
+            )
+            .Map(dest => dest.MainImage, source => $"https://localhost:7175/images/{source.MainImage}")
+            .Map(dest => dest.SubImages,
+                src => src.Images.Select(i => $"https://localhost:7175/images/{i.ImagePath}")
+            );
 
             TypeAdapterConfig<ProductUpdateRequest, Product>.NewConfig()
             .IgnoreNullValues(true);

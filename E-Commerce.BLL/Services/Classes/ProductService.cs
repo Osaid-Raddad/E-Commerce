@@ -33,6 +33,14 @@ namespace E_Commerce.BLL.Services.Classes
                 var imagePath = await _fileService.UploadFileAsync(request.MainImage);
                 product.MainImage = imagePath;
             }
+            if (request.SubImages != null)
+            {
+                foreach (var image in request.SubImages)
+                {
+                    var imagePath = await _fileService.UploadFileAsync(image);
+                    product.Images.Add(new ProductImage { ImagePath = imagePath });
+                }
+            }
             await _productRepository.CreateAsync(product);
         }
 
@@ -42,8 +50,9 @@ namespace E_Commerce.BLL.Services.Classes
                 p => p.Status == EntityStatus.Active
                 ,
                 new string[] {
-            nameof(Product.Translations),
-            nameof(Product.CreatedBy)
+                    nameof(Product.Translations),
+                    nameof(Product.CreatedBy),
+                    "Images"
                 }
             );
 
@@ -65,9 +74,9 @@ namespace E_Commerce.BLL.Services.Classes
         public async Task<bool> UpdateProduct(int id, ProductUpdateRequest request)
         {
             var product = await _productRepository.GetOneAsync(
-                  p => p.Id == id,
-                  new string[] { nameof(Product.Translations) }
-               );
+                p => p.Id == id,
+                new string[] { nameof(Product.Translations), nameof(Product.Images) }
+            );
             if (product == null) return false;
 
             request.Adapt(product);
@@ -108,6 +117,30 @@ namespace E_Commerce.BLL.Services.Classes
                 product.MainImage = oldImage;
             }
 
+            if (request.SubImages != null)
+            {
+                foreach (var image in product.Images)
+                {
+                    _fileService.Delete(image.ImagePath);
+                }
+                product.Images.Clear();
+
+                foreach (var image in request.SubImages)
+                {
+                    var imagePath = await _fileService.UploadFileAsync(image);
+                    product.Images.Add(new ProductImage { ImagePath = imagePath });
+                }
+            }
+
+            if (request.NewImages != null)
+            {
+                foreach (var image in request.NewImages)
+                {
+                    var imagePath = await _fileService.UploadFileAsync(image);
+                    product.Images.Add(new ProductImage { ImagePath = imagePath });
+                }
+            }
+
             return await _productRepository.UpdateAsync(product);
         }
 
@@ -115,10 +148,18 @@ namespace E_Commerce.BLL.Services.Classes
         public async Task<bool> DeleteProduct(int id)
         {
 
-            var product = await _productRepository.GetOneAsync(c => c.Id == id);
+            var product = await _productRepository.GetOneAsync(c => c.Id == id,
+                new string[] { nameof(Product.Images) });
+
             if (product == null) return false;
 
             _fileService.Delete(product.MainImage);
+
+            foreach (var image in product.Images)
+            {
+                _fileService.Delete(image.ImagePath);
+            }
+
             return await _productRepository.DeleteAsync(product);
         }
 

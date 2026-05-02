@@ -20,6 +20,7 @@ namespace E_Commerce.DAL.Models
 
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public List<ProductTranslation> Translations { get; set; }
+        public List<ProductTranslation> Translations { get; set; } = new List<ProductTranslation>();
+        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
     }
 }
