@@ -69,5 +69,14 @@ namespace E_Commerce.PL.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPost("Refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var result = await _authenticationService.RefreshTokenAsync();
+            if (!result.Success) return Unauthorized(result);
+
+            return Ok(result);
+        }
     }
 }

@@ -15,5 +15,6 @@ namespace E_Commerce.BLL.Services.Interfaces
         Task<bool> ConfirmEmailAsync(string token, string userId);
         Task<ForgotPasswordResponse> RequestForgotPassAsync(ForgotPasswordRequest forgotPasswordRequest);
         Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
+        Task<LoginResponse> RefreshTokenAsync();
     }
 }

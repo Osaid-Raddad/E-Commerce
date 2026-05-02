@@ -15,5 +15,7 @@ namespace E_Commerce.DAL.Models
 
         public string? RestetCode { get; set; }
         public DateTime? RestetCodeExpiration { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiry { get; set; }
     }
 }

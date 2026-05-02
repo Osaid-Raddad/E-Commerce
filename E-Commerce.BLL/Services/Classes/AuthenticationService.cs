@@ -5,6 +5,7 @@ using E_Commerce.DAL.Models;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -152,6 +153,9 @@ namespace E_Commerce.BLL.Services.Classes
             if (!result)
                 return new LoginResponse() { Message = "Invalid password", Success = false };
 
+            var refreshToken = await GenerateRefreshToken(user);
+            SetRefreshTokenCookies(refreshToken);
+
             return new LoginResponse() { Message = "Login successful", Success = true , AccessToken = await GenerateAccessToken(user) };
         }
 
@@ -187,6 +191,59 @@ namespace E_Commerce.BLL.Services.Classes
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<string> GenerateRefreshToken(ApplicationUser user)
+        {
+            var refreshToken = Guid.NewGuid().ToString();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(15);
+            await _userManager.UpdateAsync(user);
+            return refreshToken;
+        }
+
+        private void SetRefreshTokenCookies(string refreshToken)
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.
+                Append("refreshToken", refreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false, //true for production
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(15)
+                });
+        }
+
+        public async Task<LoginResponse> RefreshTokenAsync()
+        {
+            var refreshToken = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+
+            if (refreshToken is null)
+                return new LoginResponse
+                {
+                    Success = false,
+                    Message = "no refresh token"
+                };
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user.RefreshTokenExpiry < DateTime.UtcNow)
+            {
+                return new LoginResponse
+                {
+                    Success = false,
+                    Message = "refresh token expires"
+                };
+            }
+
+            var newRefreshToken = await GenerateRefreshToken(user);
+            SetRefreshTokenCookies(newRefreshToken);
+
+            return new LoginResponse
+            {
+                Success = true,
+                Message = "success",
+                AccessToken = await GenerateAccessToken(user)
+            };
         }
 
         public async Task<ForgotPasswordResponse> RequestForgotPassAsync(ForgotPasswordRequest forgotPasswordRequest)
